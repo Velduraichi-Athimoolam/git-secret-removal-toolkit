@@ -1,71 +1,68 @@
-# 🧩 Gitleaks Troubleshooting & Secret Removal Toolkit
+🧩 Gitleaks Troubleshooting & Secret Removal Toolkit
 
 This repository provides a complete toolkit and step-by-step guide to identify, remove, and validate leaked credentials (API keys, tokens, certificates) in Git repositories.
 
 It includes:
-- Local Gitleaks installation and verification
-- Safe backup strategy before modifying history
-- Three cleanup methods (single file, specific commit, multi-branch cleanup)
-- Verification steps after cleanup
-- Best practices for preventing future leaks
-- Automated scripts for commit and file cleanup
 
----
+Local Gitleaks installation and verification
 
-## 🧠 Overview
+Safe backup strategy before modifying history
 
-Leaks can happen — certificates, tokens, passwords, or sensitive configuration files sometimes end up in Git history.  
+Three cleanup methods (single file, specific commit, multi-branch cleanup)
+
+Verification steps after cleanup
+
+Best practices for preventing future leaks
+
+Automated scripts for commit and file cleanup
+
+🧠 Overview
+
+Leaks happen — certificates, tokens, passwords, or sensitive configuration files sometimes end up in Git history.
+
 This repository helps you:
 
-✔ Detect leaks  
-✔ Clean Git history safely  
-✔ Automate commit and file removal  
-✔ Enforce good security practices  
+✔ Detect leaks
+✔ Clean Git history safely
+✔ Automate commit and file removal
+✔ Enforce strong security practices
 
----
+🧩 Step 1: Install & Verify Gitleaks
+📦 Installation
+Windows
 
-# 🧩 Step 1: Install & Verify Gitleaks
+Download the latest release from Gitleaks GitHub.
 
-## 📦 Installation
-
-### **Windows**
-Download the binary from the official releases page and add it to PATH:
-
+Verify installation:
 
 gitleaks version
 
-
-### **macOS**
-
-
+macOS
 brew install gitleaks
 
-
-### **Linux**
-```bash
+Linux
 curl -sSfL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64.tar.gz | tar -xz
 sudo mv gitleaks /usr/local/bin/
 
-
-#🧪 Step 2: Run Initial Scan
+🧪 Step 2: Run Initial Scan
 
 Before cleanup, verify if the repo currently contains leaks:
 
 gitleaks detect -s ./ --no-git -v
 
 
-✔ If no leaks detected → you’re safe
-✔ If leaks found → note the file path or commit ID
+✔ No leaks detected → safe
+✔ Leaks found → note file path or commit ID
 
-#🔥 Step 3: Backup Before Cleanup
+🔥 Step 3: Backup Before Cleanup
 
-Always create a backup branch before modifying Git history:
+Always backup before rewriting Git history:
 
 git checkout main
 git checkout -b backup_main
 git push origin backup_main
 
-#🪶 Step 4: Cleanup Methods
+🪶 Step 4: Cleanup Methods
 
 This repo supports three cleanup strategies.
 
@@ -76,55 +73,43 @@ Use this if only one file contains sensitive data.
 git filter-repo --sensitive-data-removal --path path/to/leaked_file.pem --invert-paths
 
 
-Push with force:
+Push rewritten history:
 
 git push origin <branch> --force
 
-#🧩 Method 2: Remove a Specific Commit
+🧩 Method 2: Remove a Specific Commit
 
-Script available here → scrub_commit.sh
+Script available → scrub_commit.sh
 
-Modify inside the script:
+Modify:
 
 COMMIT_ID="<your_commit_id>"
+BRANCHES=(branch1 branch2 branch3)
 
-Add affected branches to BRANCHES=(...)
 
 Run:
 
 bash scrub_commit.sh
 
 
-This will:
+This removes only the affected commit from selected branches.
 
-Identify branches containing the commit
+🧩 Method 3: Remove a File Across Multiple Branches
 
-Remove the commit only from those branches
+Script available → remove_file_history.sh
 
-Push rewritten history back to origin
-
-#🧩 Method 3: Remove a File Across Multiple Branches
-
-Script available here → remove_file_history.sh
-
-Modify inside the script:
+Modify:
 
 FILE_PATH="path/to/file"
+BRANCHES=(main develop patch-1)
 
-Add target branches to BRANCHES=(...)
 
 Run:
 
 bash remove_file_history.sh
 
 
-This will:
-
-Remove the file’s entire history
-
-Rewrite history for all branches
-
-Push with --force
+This removes the file and its entire history from multiple branches.
 
 🔍 Step 5: Verification & Validation
 ✔ 1. Check if the commit still exists
@@ -132,24 +117,22 @@ git fetch --all
 git branch -r --contains <COMMIT_ID>
 
 
-No output = commit successfully removed.
+No output → commit successfully removed.
 
-✔ 2. Clone Fresh & Run Gitleaks Again
+✔ 2. Clone Fresh & Verify With Gitleaks
 git clone <repo-url>
 cd repo
 gitleaks detect -s ./ --no-git -v
 
 
-Expected:
+Expected results:
 
-No references to the sensitive file
+No references to sensitive files
 
 No leaks detected
 
 🧠 Best Practices to Prevent Future Leaks
 🔒 1. Use CI/CD Leak Scanning
-
-Add a Gitleaks stage to GitHub Actions, Jenkins, GitLab, etc.
 
 GitHub Action example:
 
@@ -183,10 +166,10 @@ GitHub Actions Secrets
 
 📘 4. Educate Contributors
 
-Add to onboarding:
+Include in team onboarding:
 
 “Never commit secrets”
 
-“Always run Gitleaks before push”
+“Always run Gitleaks before pushing”
 
 “Review PRs for sensitive data”
