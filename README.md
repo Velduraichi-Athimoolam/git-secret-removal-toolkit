@@ -70,6 +70,10 @@ Verify installation:
 
 ```bash
 gitleaks version
+```
 
-### *MacOS**
 
+### **MacOS**
+```bash
+brew install gitleaks
+```
