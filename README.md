@@ -46,7 +46,8 @@ brew install gitleaks
 curl -sSfL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64.tar.gz | tar -xz
 sudo mv gitleaks /usr/local/bin/
 
-🧪 Step 2: Run Initial Scan
+
+#🧪 Step 2: Run Initial Scan
 
 Before cleanup, verify if the repo currently contains leaks:
 
@@ -56,7 +57,7 @@ gitleaks detect -s ./ --no-git -v
 ✔ If no leaks detected → you’re safe
 ✔ If leaks found → note the file path or commit ID
 
-🔥 Step 3: Backup Before Cleanup
+#🔥 Step 3: Backup Before Cleanup
 
 Always create a backup branch before modifying Git history:
 
@@ -64,7 +65,7 @@ git checkout main
 git checkout -b backup_main
 git push origin backup_main
 
-🪶 Step 4: Cleanup Methods
+#🪶 Step 4: Cleanup Methods
 
 This repo supports three cleanup strategies.
 
@@ -79,7 +80,7 @@ Push with force:
 
 git push origin <branch> --force
 
-🧩 Method 2: Remove a Specific Commit
+#🧩 Method 2: Remove a Specific Commit
 
 Script available here → scrub_commit.sh
 
@@ -102,7 +103,7 @@ Remove the commit only from those branches
 
 Push rewritten history back to origin
 
-🧩 Method 3: Remove a File Across Multiple Branches
+#🧩 Method 3: Remove a File Across Multiple Branches
 
 Script available here → remove_file_history.sh
 
@@ -189,18 +190,3 @@ Add to onboarding:
 “Always run Gitleaks before push”
 
 “Review PRs for sensitive data”
-
-📁 Repo Structure
-.
-├── README.md
-├── LICENSE
-├── scrub_commit.sh
-├── remove_file_history.sh
-└── .gitleaks.toml.example (optional)
-
-🏁 Final Notes
-
-✔ Always notify your team before force-pushing rewritten history
-✔ Confirm cleanup using a fresh clone
-✔ Keep your backup branch until cleanup is fully approved
-✔ Never commit credentials again — automate checks
